@@ -19,7 +19,18 @@ export interface SessionTable {
     revoked_at: Date | null;
 }
 
+export interface ExpensesTable {
+    id: Generated<number>;
+    user_id: number;
+    description: string;
+    amount: number;
+    date: Date;
+    created_at: Date;
+    updated_at: Date;
+}
+
 export interface Database {
     user: UserTable;
     sessions: SessionTable;
+    expenses: ExpensesTable;
 }

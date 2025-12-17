@@ -1,12 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import crypto from "node:crypto";
-import {
-    getSession,
-    refreshTransaction,
-    revokeSession,
-} from "../repositories/session.repo.js";
-import { getUserById } from "../repositories/user.repo.js";
+import { refreshTransaction } from "../repositories/session.repo.js";
+import { createUser, getUserByUsername } from "../repositories/user.repo.js";
 import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 
 // @desc    update refresh and access tokens
 // @route   POST /api/auth/refresh
@@ -28,23 +25,73 @@ export const refreshToken = async (
         .update(refreshToken)
         .digest("hex");
 
-    const newRefreshToken = crypto.randomBytes(64).toString("hex");
+    response.locals.refreshToken = crypto.randomBytes(64).toString("hex");
 
     const refresh_token_hash = crypto
         .createHash("sha256")
-        .update(newRefreshToken)
+        .update(response.locals.refreshToken)
         .digest("hex");
 
     const params = { oldRefreshTokenHash, refresh_token_hash };
 
     const newSession = await refreshTransaction(params);
 
-    const accessToken = jwt.sign(
+    response.locals.accessToken = jwt.sign(
         { user_id: newSession.user_id, session_id: newSession.id },
         process.env.JWT_TOKEN_SECRET!,
         { expiresIn: "600s" }
     );
 
-    response.status(200).json({ accessToken, refreshToken: newRefreshToken });
-    return;
+    next();
+};
+
+// @desc    Sends tokens to the client
+// @route   POST /api/auth/login & /api/auth/refresh
+// @access  Private
+export const sendTokens = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+): Promise<void> => {
+    response.status(200).json({
+        accessToken: response.locals.accessToken,
+        refreshToken: response.locals.refreshToken,
+    });
+};
+
+
+
+// @desc    Login with a user
+// @route   POST /api/user/login
+// @access  Public
+export const login = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+): Promise<void> => {
+    try {
+        const { username, password } = request.body;
+
+        const user = await getUserByUsername(username);
+
+        if (!user) {
+            response.status(400).json({ msg: "User not found" });
+            return;
+        }
+
+        response.locals.user = user;
+
+        if (!(await bcrypt.compare(password, user.password))) {
+            response.status(400).json({ msg: "Wrong password" });
+            return;
+        }
+
+        next();
+
+        return;
+    } catch (error) {
+        response.status(400).json({ error });
+        console.log(error);
+        return;
+    }
 };

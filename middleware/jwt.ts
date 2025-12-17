@@ -13,26 +13,27 @@ export const generateTokens = async (
     next: NextFunction
 ): Promise<void> => {
     const user_id = response.locals.user.id;
-    // console.log(response.locals.user);
 
-    const refreshToken = crypto.randomBytes(64).toString("hex");
+    response.locals.refreshToken = crypto.randomBytes(64).toString("hex");
 
     const refresh_token_hash = crypto
         .createHash("sha256")
-        .update(refreshToken)
+        .update(response.locals.refreshToken)
         .digest("hex");
 
     const session = await createSession({ user_id, refresh_token_hash });
 
-    const accessToken = jwt.sign(
+    response.locals.accessToken = jwt.sign(
         { user_id, session_id: session.id },
         process.env.JWT_TOKEN_SECRET!,
         { expiresIn: "600s" }
     );
 
-    response
-        .status(200)
-        .json({ msg: "Logged In Successfully!", accessToken, refreshToken });
+    next();
+
+    // response
+    //     .status(200)
+    //     .json({ msg: "Logged In Successfully!", accessToken, refreshToken });
     return;
 };
 
@@ -58,7 +59,6 @@ export const authentication = async (
         response.locals.user = user;
 
         next();
-        return;
     } catch (error) {
         response.status(404).json({ msg: "Invalid token" });
         return;

@@ -41,36 +41,3 @@ export const signup = async (
         return;
     }
 };
-
-// @desc    Login with a user
-// @route   POST /api/user/login
-// @access  Public
-export const login = async (
-    request: Request,
-    response: Response,
-    next: NextFunction
-): Promise<void> => {
-    try {
-        const { username, password } = request.body;
-
-        const users = await getAllUsers();
-        // console.log(users);
-
-        const user = users.find((user) => user.username == username);
-
-        if (!user) {
-            response.status(400).json({ msg: "User not found" });
-            return;
-        }
-
-        response.locals.user = user;
-
-        next();
-        // console.log("passed");
-        return;
-    } catch (error) {
-        response.status(400).json({ error });
-        console.log(error);
-        return;
-    }
-};

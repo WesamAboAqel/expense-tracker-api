@@ -19,8 +19,6 @@ export const checkPassword = async (
         }
 
         next();
-        // console.log("passed");
-        return;
     } catch (error) {
         response.status(404).json({ msg: "Wrong password" });
         return;

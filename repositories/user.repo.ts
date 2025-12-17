@@ -38,3 +38,14 @@ export const getUserById = async (id: number) => {
         .where("id", "=", id)
         .executeTakeFirst();
 };
+
+// @param      username - string
+// @returns    user - UserTable
+// @notes      get user by username
+export const getUserByUsername = async (username: string) => {
+    return await db
+        .selectFrom("user")
+        .selectAll()
+        .where("username", "=", username)
+        .executeTakeFirst();
+};
