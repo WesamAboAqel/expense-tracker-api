@@ -1,0 +1,27 @@
+services:
+    backend:
+        build: .
+        user: "1000:1000"
+        container_name: expense-backend
+        volumes:
+            - .:/app
+        env_file: .env
+        command: ["npm", "run", "dev"]
+        ports:
+            - "3000:3000"
+
+    database:
+        image: postgres:18
+        container_name: expense-db
+        restart: always
+        environment:
+            POSTGRES_USER: expense_admin
+            POSTGRES_PASSWORD: "12345678"
+            POSTGRES_DB: expense_db
+        ports:
+            - "5432:5432"
+        volumes:
+            - expense-tracker_pgdata:/var/lib/postgresql
+
+volumes:
+    expense-tracker_pgdata:

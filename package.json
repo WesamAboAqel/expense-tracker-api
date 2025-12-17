@@ -1,0 +1,34 @@
+{
+    "name": "expense-tracker-api",
+    "version": "1.0.0",
+    "main": "server.js",
+    "type": "module",
+    "scripts": {
+        "dev": "NODE_NO_WARNINGS=1 node --watch --env-file=.env --loader ts-node/esm server.ts",
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "db:create-migration": "node ./scripts/make-migration.js",
+        "db:migrate": "node --env-file=.env --loader ts-node/esm ./database/migrate.ts"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "description": "",
+    "dependencies": {
+        "bcrypt": "^6.0.0",
+        "colors": "^1.4.0",
+        "cors": "^2.8.5",
+        "express": "^5.2.1",
+        "jsonwebtoken": "^9.0.3",
+        "kysely": "^0.28.9",
+        "pg": "^8.16.0",
+        "ts-node": "^10.9.2",
+        "typescript": "^5.9.3"
+    },
+    "devDependencies": {
+        "@types/bcrypt": "^6.0.0",
+        "@types/express": "^5.0.6",
+        "@types/jsonwebtoken": "^9.0.10",
+        "@types/node": "^25.0.2",
+        "@types/pg": "^8.16.0"
+    }
+}
