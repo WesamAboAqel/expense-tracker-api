@@ -15,6 +15,7 @@ export const generateTokens = async (
     const user_id = response.locals.user.id;
 
     response.locals.refreshToken = crypto.randomBytes(64).toString("hex");
+    // console.log(response.locals.refreshToken);
 
     const refresh_token_hash = crypto
         .createHash("sha256")
@@ -30,11 +31,6 @@ export const generateTokens = async (
     );
 
     next();
-
-    // response
-    //     .status(200)
-    //     .json({ msg: "Logged In Successfully!", accessToken, refreshToken });
-    return;
 };
 
 // @desc    Authenticate Users
@@ -55,8 +51,8 @@ export const authentication = async (
             return;
         }
 
-        const user = jwt.verify(accessToken, process.env.JWT_TOKEN_SECRET!);
-        response.locals.user = user;
+        const payload = jwt.verify(accessToken, process.env.JWT_TOKEN_SECRET!);
+        response.locals.payload = payload;
 
         next();
     } catch (error) {

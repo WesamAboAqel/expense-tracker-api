@@ -1,6 +1,7 @@
 import express from "express";
 import users from "./routes/user.route.js";
 import auth from "./routes/auth.route.js";
+import expenses from "./routes/expenses.route.js";
 import logger from "./middleware/logger.js";
 import errorHandler from "./middleware/error_handler.js";
 
@@ -12,6 +13,7 @@ app.use(logger);
 
 app.use("/api/users", users);
 app.use("/api/auth", auth);
+app.use("/api/expenses", expenses);
 
 app.use(errorHandler);
 

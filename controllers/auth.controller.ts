@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import crypto from "node:crypto";
 import { refreshTransaction } from "../repositories/session.repo.js";
-import { createUser, getUserByUsername } from "../repositories/user.repo.js";
+import { getUserByUsername } from "../repositories/user.repo.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 
@@ -14,7 +14,7 @@ export const refreshToken = async (
     next: NextFunction
 ): Promise<void> => {
     const { refreshToken } = request.body;
-
+    // console.log(refreshToken);
     if (!refreshToken) {
         response.status(400).json({ msg: "Invalid refresh Token" });
         return;
@@ -34,7 +34,11 @@ export const refreshToken = async (
 
     const params = { oldRefreshTokenHash, refresh_token_hash };
 
+    // console.log(params);
+
     const newSession = await refreshTransaction(params);
+
+    // console.log(newSession);
 
     response.locals.accessToken = jwt.sign(
         { user_id: newSession.user_id, session_id: newSession.id },
@@ -58,8 +62,6 @@ export const sendTokens = async (
         refreshToken: response.locals.refreshToken,
     });
 };
-
-
 
 // @desc    Login with a user
 // @route   POST /api/user/login
