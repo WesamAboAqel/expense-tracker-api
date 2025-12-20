@@ -8,16 +8,38 @@ import {
 } from "../repositories/expenses.repo.js";
 
 // @desc    get all expenses for user
-// @route   GET /api/expenses/user/:user_id
+// @route   GET /api/expenses/user
 // @access  Private
 export const getUserExpensesC = async (
     request: Request,
     response: Response
 ): Promise<void> => {
     try {
-        const user_id = response.locals.payload.user_id;
+        const filter = {
+            user_id: response.locals.payload.user_id,
+            category:
+                typeof request.query.category === "string"
+                    ? request.query.category
+                    : undefined,
+            startDate:
+                typeof request.query.startDate === "string"
+                    ? new Date(request.query.startDate)
+                    : undefined,
+            endDate:
+                typeof request.query.endDate === "string"
+                    ? new Date(request.query.endDate)
+                    : undefined,
+            minAmount:
+                typeof request.query.minAmount === "string"
+                    ? Number(request.query.minAmount)
+                    : undefined,
+            maxAmount:
+                typeof request.query.maxAmount === "string"
+                    ? Number(request.query.maxAmount)
+                    : undefined,
+        };
 
-        const expenses = await getExpensesByUserId(user_id);
+        const expenses = await getExpensesByUserId(filter);
 
         response.status(200).json(expenses);
     } catch (error) {
@@ -33,10 +55,8 @@ export const updateExpenseC = async (
     response: Response
 ): Promise<void> => {
     try {
-        const id = parseInt(request.params.id!);
-
         const info = {
-            id,
+            id: parseInt(request.params.id!),
             description: request.body.description,
             amount:
                 request.body.amount !== undefined
@@ -44,8 +64,9 @@ export const updateExpenseC = async (
                     : undefined,
             date:
                 request.body.date !== undefined
-                    ? new Date(request.body.amount)
+                    ? new Date(request.body.date)
                     : undefined,
+            category: request.body.category,
         };
 
         const newExpense = await updateExpenseById(info);
@@ -90,6 +111,7 @@ export const addExpenseC = async (
             description: request.body.description,
             amount: parseInt(request.body.amount),
             date: new Date(request.body.date),
+            category: request.body.category,
         };
 
         // console.log(info);

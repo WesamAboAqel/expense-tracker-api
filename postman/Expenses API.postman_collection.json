@@ -1,0 +1,331 @@
+{
+	"info": {
+		"_postman_id": "21528afa-1001-46c2-a1f2-5039121f388a",
+		"name": "Expenses API",
+		"description": "# Expenses API\n\nA comprehensive RESTful API for managing personal expenses and user accounts. This API provides full functionality for user authentication, expense tracking, and user management with secure token-based authentication.\n\n## Introduction\n\nThe Expenses API is designed to help individuals and teams track and manage their expenses efficiently. Built with modern REST principles, this API offers a complete solution for expense management, from user registration and authentication to detailed expense tracking with filtering capabilities.\n\nWhether you're building a personal finance application, an expense reporting system, or integrating expense tracking into your existing platform, this API provides all the necessary endpoints to create a robust expense management solution.\n\n## Getting Started\n\n### Base URL\n\n```\nlocalhost:3000\n\n ```\n\n### Quick Start Guide\n\n1. **Create an Account** - Use the Sign Up endpoint in the Auth folder to create a new user account\n    \n2. **Login** - Authenticate with your credentials to receive access and refresh tokens (automatically saved to environment)\n    \n3. **Start Managing Expenses** - Use the authenticated endpoints to create, read, update, and delete expense records\n    \n4. **Manage Users** - Access user information through the Users folder endpoints\n    \n\n### Prerequisites\n\n- A REST client (Postman recommended)\n    \n- Valid email address for registration\n    \n- The `Testing` environment activated (or create your own environment)\n    \n\n---\n\n## Authentication\n\nThe API uses **Bearer Token Authentication** for secure access to protected endpoints.\n\n### Authentication Flow\n\n1. **Sign Up** (no auth required) - Create account\n    \n2. **Login** (no auth required) - Receive `accessToken` and `refreshToken`\n    \n3. **Make Authenticated Requests** - Include `Bearer accessToken` in Authorization header\n    \n4. **Refresh Token** (when access token expires) - Use refresh token to get new access token\n    \n\n### Token Management\n\nAfter successful login, you'll receive:\n\n- **Access Token** - Short-lived JWT token for API authentication (automatically saved as `accessToken`)\n    \n- **Refresh Token** - Long-lived token for obtaining new access tokens (automatically saved as `refreshToken`)\n    \n\nThe collection automatically manages these tokens through test scripts, storing them in environment variables for seamless use across all authenticated requests.\n\n### Authorization Header Format\n\n```\nAuthorization: Bearer {{accessToken}}\n\n ```\n\n---\n\n## API Structure\n\n### Auth Folder\n\nUser authentication and token management endpoints:\n\n- **Sign Up** - Create new user account\n    \n- **Login** - Authenticate and receive tokens\n    \n- **Refresh Auth** - Renew access token using refresh token\n    \n\n### Expenses Folder\n\nComplete CRUD operations for expense management:\n\n- **Add Expense** - Create new expense records\n    \n- **Get Expenses for User** - Retrieve all expenses with filtering options\n    \n- **Get Expense by Id** - Fetch specific expense details\n    \n- **Update Expense** - Modify existing expense records\n    \n- **Delete Expense** - Remove expense records\n    \n\n### Users Folder\n\nUser management and information retrieval:\n\n- **Get all Users** - Retrieve list of all users in the system\n    \n\n---\n\n## Environment Variables\n\nThe collection uses the following environment variables:\n\n| Variable | Description | Set By |\n| --- | --- | --- |\n| `accessToken` | JWT access token for API authentication | Automatically set after login |\n| `refreshToken` | Token for refreshing expired access tokens | Automatically set after login |\n\n**Note:** Make sure you have the `Testing` environment selected and active before making requests.\n\n---\n\n## Request & Response Format\n\n### Content Type\n\nAll requests and responses use JSON format:\n\n```\nContent-Type: application/json\n\n ```\n\n### Date Format\n\nAll date fields use the ISO date format:\n\n```\nYYYY-MM-DD (e.g., 2025-12-20)\n\n ```\n\n### Common Response Codes\n\n| Code | Description |\n| --- | --- |\n| 200 | OK - Request successful |\n| 201 | Created - Resource created successfully |\n| 204 | No Content - Request successful, no content to return |\n| 400 | Bad Request - Invalid request data or parameters |\n| 401 | Unauthorized - Missing or invalid authentication token |\n| 403 | Forbidden - Insufficient permissions |\n| 404 | Not Found - Resource not found |\n| 500 | Internal Server Error - Server-side error |\n\n---\n\n## Usage Examples\n\n### Example Workflow\n\n1. **Register a new user:**\n    \n    ```\n           POST /signup\n           Body: { \"firstName\": \"John\", \"lastName\": \"Doe\", \"email\": \"john@example.com\", \"password\": \"secure123\" }\n    \n     ```\n    \n2. **Login with a user:**\n    \n    ```\n           POST /login  \n           Body: { \"email\": \"john@example.com\", \"password\": \"secure123\" }  Response:{\"accessToken\": \"...\", \"refreshToken\": \"...\" }\n    \n     ```\n    \n3. **Add a new Expense:**\n    \n    ```\n           POST /expenses Headers: Authorization: Bearer {{accessToken}} \n           Body: { \"amount\": 50.00, \"date\": \"2025-12-20\", \"category\": \"Food\" }\n    \n     ```\n    \n4. **Get Expenses for User:**\n    \n    ```\n           GET /expenses Headers: Authorization: Bearer {{accessToken}}\n           GET /expenses?startDate=2025-01-01&endDate=2025-12-31 Headers: Authorization: Bearer {{accessToken}}\n    \n     ```\n    \n\n---\n\n## Error Handling\n\nThe API uses standard HTTP status codes to indicate the success or failure of requests. All error responses include a descriptive message to help identify and resolve issues.\n\n### Error Response Format\n\n``` json\n{\n  \"error\": \"Descriptive error message\"\n}\n\n ```\n\n### Common Error Scenarios\n\n**Authentication Errors (401):**\n\n- Missing or invalid access token\n    \n- Expired access token\n    \n- Malformed Authorization header\n    \n\n**Authorization Errors (403):**\n\n- Attempting to access resources belonging to other users\n    \n- Insufficient permissions for the requested operation\n    \n\n**Validation Errors (400):**\n\n- Missing required fields\n    \n- Invalid data format (e.g., incorrect date format)\n    \n- Invalid data values (e.g., negative amounts)\n    \n\n**Resource Errors (404):**\n\n- Requested resource does not exist\n    \n- Invalid resource ID\n    \n\n---\n\n## Documentation\n\nDetailed documentation for each endpoint is available in the folder descriptions:\n\n- Navigate to each folder (Auth, Expenses, Users) to see comprehensive endpoint documentation\n    \n- Each endpoint includes: HTTP method, URL, authentication requirements, request parameters, request body examples, response structures, and usage notes\n    \n\n---\n\n## Support\n\nFor issues, questions, or feature requests regarding this API:\n\n- Review the detailed endpoint documentation in each folder\n    \n- Check the troubleshooting section above\n    \n- Contact the development team for additional support\n    \n\n---\n\n## Version Information\n\n**Current Version:** 1.0  \n**Last Updated:** December 2025",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "37753689"
+	},
+	"item": [
+		{
+			"name": "Auth",
+			"item": [
+				{
+					"name": "Sign Up",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"name\":\"zaid\",\r\n    \"username\": \"zaidaboaqel\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/api/users/signup",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"users",
+								"signup"
+							]
+						},
+						"description": "## Sign Up\n\n**Create a new user account**\n\n- **Method:** `POST`\n    \n- **URL:** `localhost:3000/signup`\n    \n- **Authentication:** None required\n    \n- **Content-Type:** `application/json`\n    \n\n### Request Body\n\n``` json\n{\n  \"name\": \"string\",\n  \"email\": \"string\",\n  \"password\": \"string\"\n}\n\n ```\n\n**Parameters:**\n\n- `name` (string, required) - User's name\n    \n- `username` (string, required) - Valid email address for the account\n    \n- `password` (string, required) - Password for the account (should meet security requirements)\n    \n\n### Response\n\n**Success (201 Created):**\n\n``` json\n{\n  \"msg\": \"User Created Successfully!\"\n}\n\n ```\n\n**Error (400 Bad Request):**\n\n``` json\n{\n  \"error\": \"Error message describing the issue\"\n}\n\n ```\n\n### Usage Notes\n\n- Username must be unique in the system\n    \n- Upon successful registration, proceed to login to obtain authentication tokens\n    \n\n---"
+					},
+					"response": []
+				},
+				{
+					"name": "Login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const json = pm.response.json()\r",
+									"\r",
+									"pm.environment.set(\"accessToken\", json.accessToken)\r",
+									"pm.environment.set(\"refreshToken\", json.refreshToken)"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"username\": \"wesamaboaqel\",\r\n    \"password\": \"password\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/api/auth/login",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"login"
+							]
+						},
+						"description": "## Login\n\n**Authenticate user and receive access tokens**\n\n- **Method:** `POST`\n    \n- **URL:** `localhost:3000/login`\n    \n- **Authentication:** None required\n    \n- **Content-Type:** `application/json`\n    \n\n### Request Body\n\n``` json\n{\n  \"username\": \"string\",\n  \"password\": \"string\"\n}\n\n ```\n\n**Parameters:**\n\n- `username` (string, required) - User's registered email address\n    \n- `password` (string, required) - User's password\n    \n\n### Response\n\n**Success (200 OK):**\n\n``` json\n{\n  \"accessToken\": \"string\",\n  \"refreshToken\": \"string\",\n}\n\n ```\n\n**Error (401 Unauthorized):**\n\n``` json\n{\n  \"error\": \"Invalid credentials\"\n}\n\n ```\n\n### Usage Notes\n\n- The `accessToken` is automatically saved to the environment variable `accessToken`\n    \n- The `refreshToken` is automatically saved to the environment variable `refreshToken`\n    \n- Access tokens are used for authenticating subsequent API requests\n    \n- Include the access token in the Authorization header: `Bearer {{accessToken}}`\n    \n- Access tokens expire after a certain period; use the refresh token to obtain a new one"
+					},
+					"response": []
+				},
+				{
+					"name": "Refresh Auth",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"const json = pm.response.json()\r",
+									"\r",
+									"pm.environment.set(\"accessToken\", json.accessToken)\r",
+									"pm.environment.set(\"refreshToken\", json.refreshToken)"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"refreshToken\": \"{{refreshToken}}\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/api/auth/refresh",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"auth",
+								"refresh"
+							]
+						},
+						"description": "## Refresh Auth\n\n**Renew access token using refresh token**\n\n- **Method:** `POST`\n    \n- **URL:** `localhost:3000/refresh`\n    \n- **Authentication:** None required (uses refresh token in body)\n    \n- **Content-Type:** `application/json`\n    \n\n### Request Body\n\n``` json\n{\n  \"refreshToken\": \"string\"\n}\n\n ```\n\n**Parameters:**\n\n- `refreshToken` (string, required) - Valid refresh token obtained from login\n    \n\n### Response\n\n**Success (200 OK):**\n\n``` json\n{\n  \"accessToken\": \"string\",\n  \"refreshToken\": \"string\"\n}\n\n ```\n\n**Error (401 Unauthorized):**\n\n``` json\n{\n  \"error\": \"Invalid refresh token\"\n}\n\n ```\n\n### Usage Notes\n\n- Use this endpoint when your access token expires\n    \n- The new `accessToken` is automatically saved to the environment\n    \n- A new `refreshToken` may also be issued and saved\n    \n- If the refresh token is invalid or expired, you'll need to login again\n    \n- The collection automatically manages token refresh through test scripts\n    \n\n---\n\n## Authentication Flow\n\n1. **Sign Up** - Create a new user account (no authentication required)\n    \n2. **Login** - Authenticate and receive access and refresh tokens (no authentication required)\n    \n3. **Use API** - Make authenticated requests using the access token\n    \n4. **Refresh Auth** - Renew access token when it expires using the refresh token\n    \n\n## Token Management\n\nAfter successful login, the API returns:\n\n- `accessToken` - JWT token for authenticating API requests (automatically saved to environment)\n    \n- `refreshToken` - Token for obtaining new access tokens when they expire (automatically saved to environment)\n    \n\nThe collection automatically manages these tokens through test scripts, storing them in environment variables for use in subsequent requests."
+					},
+					"response": []
+				}
+			],
+			"description": "# Authentication Endpoints\n\nThis folder contains endpoints for user authentication and token management. These endpoints handle user registration, login, and token refresh operations.\n\n---"
+		},
+		{
+			"name": "Expenses",
+			"item": [
+				{
+					"name": "Add Expense",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Sixth  Expense\",\r\n    \"amount\": 15,\r\n    \"date\": \"2025-12-20\",\r\n    \"category\":\"Others\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/api/expenses/add",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"expenses",
+								"add"
+							]
+						},
+						"description": "## Add Expense\n\n**Create a new expense record**\n\n- **Method:** `POST`\n    \n- **URL:** `localhost:3000/expenses`\n    \n- **Authentication:** Bearer Token (required)\n    \n- **Content-Type:** `application/json`\n    \n\n### Request Body\n\n``` json\n{\n  \"amount\": 0,\n  \"date\": \"YYYY-MM-DD\",\n  \"category\": \"string\",\n  \"description\": \"string\"\n}\n\n ```\n\n**Parameters:**\n\n- `amount` (number, required) - Expense amount (positive number)\n    \n- `date` (string, required) - Date of expense in format YYYY-MM-DD (e.g., \"2025-12-20\")\n    \n- `category` (string, required) - Expense category (e.g., \"Travel\", \"Food\", \"Office Supplies\")\n    \n- `description` (string, optional) - Additional details about the expense\n    \n\n### Response\n\n**Success (201 Created):**\n\n``` json\n{\n  \"id\": \"number\",\n  \"user_id\": \"string\",\n  \"amount\": 0,\n  \"date\": \"YYYY-MM-DD\",\n  \"category\": \"string\",\n  \"description\": \"string\",\n  \"createdAt\": \"timestamp\",\n  \"updatedAt\": \"timestamp\"\n}\n\n ```\n\n**Error (400 Bad Request):**\n\n``` json\n{\n  \"error\": \"Validation error message\"\n}\n\n ```\n\n### Usage Notes\n\n- Amount must be a positive number\n    \n- Date must be in YYYY-MM-DD format\n    \n- The expense is automatically associated with the authenticated user\n    \n\n---"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expenses for User",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"First  Expense\",\r\n    \"amount\": 10,\r\n    \"date\": \"15-10-2025\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/expenses/user/1?startDate=2025-11-1&endDate=2025-12-1",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"expenses",
+								"user",
+								"1"
+							],
+							"query": [
+								{
+									"key": "startDate",
+									"value": "2025-11-1"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-12-1"
+								}
+							]
+						},
+						"description": "## Get Expenses for User\n\n**Retrieve all expenses for the authenticated user with optional filtering**\n\n- **Method:** `GET`\n    \n- **URL:** `localhost:3000/expenses`\n    \n- **Authentication:** Bearer Token (required)\n    \n\n### Query Parameters\n\n- `startDate` (string, optional) - Filter expenses from this date (YYYY-MM-DD)\n    \n- `endDate` (string, optional) - Filter expenses until this date (YYYY-MM-DD)\n    \n- `minAmount` (number, optional) - Filter expenses with amount greater than or equal to this value\n    \n- `maxAmount` (number, optional) - Filter expenses with amount less than or equal to this value\n    \n- `category` (string, optional) - Filter expenses by category\n    \n\n**Example:** `localhost:3000/expenses?startDate=2025-01-01&endDate=2025-12-31&category=Travel`\n\n### Response\n\n**Success (200 OK):**\n\n``` json\n[\n  {\n    \"id\": \"number\",\n    \"user_id\": \"string\",\n    \"amount\": 0,\n    \"date\": \"YYYY-MM-DD\",\n    \"category\": \"string\",\n    \"description\": \"string\",\n    \"createdAt\": \"timestamp\",\n    \"updatedAt\": \"timestamp\"\n  }\n]\n\n ```\n\n**Error (401 Unauthorized):**\n\n``` json\n{\n  \"error\": \"Authentication required\"\n}\n\n ```\n\n### Usage Notes\n\n- Returns all expenses for the authenticated user\n    \n- Query parameters can be combined for advanced filtering\n    \n- Empty array is returned if no expenses match the criteria\n    \n\n---"
+					},
+					"response": []
+				},
+				{
+					"name": "Delete Expense",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"First  Expense\",\r\n    \"amount\": 10,\r\n    \"date\": \"15-10-2025\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/expenses/7",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"expenses",
+								"7"
+							]
+						},
+						"description": "## Delete Expense\n\n**Remove an expense record permanently**\n\n- **Method:** `DELETE`\n    \n- **URL:** `localhost:3000/expenses/:id`\n    \n- **Authentication:** Bearer Token (required)\n    \n\n### Path Parameters\n\n- `id` (number, required) - Unique identifier of the expense to delete\n    \n\n**Example:** `localhost:3000/expenses/1`\n\n### Response\n\n**Success (200 OK or 204 No Content):**\n\n``` json\n{\n  \"message\": \"Expense deleted successfully\"\n}\n\n ```\n\n**Error (404 Not Found):**\n\n``` json\n{\n  \"error\": \"Failed to delete expense\"\n}\n\n ```\n\n**Error (403 Forbidden):**\n\n``` json\n{\n  \"error\": \"Authentication Required!\"\n}\n\n ```\n\n### Usage Notes\n\n- This action is permanent and cannot be undone\n    \n- Returns 404 if the expense doesn't exist\n    \n\n---"
+					},
+					"response": []
+				},
+				{
+					"name": "Get Expense by Id",
+					"protocolProfileBehavior": {
+						"disableBodyPruning": true
+					},
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"First  Expense\",\r\n    \"amount\": 10,\r\n    \"date\": \"15-10-2025\"\r\n}"
+						},
+						"url": {
+							"raw": "localhost:3000/api/expenses/8",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"expenses",
+								"8"
+							]
+						},
+						"description": "## Get Expense by Id\n\n**Retrieve a specific expense by its unique identifier**\n\n- **Method:** `GET`\n    \n- **URL:** `localhost:3000/expenses/:id`\n    \n- **Authentication:** Bearer Token (required)\n    \n\n### Path Parameters\n\n- `id` (number, required) - Unique identifier of the expense\n    \n\n**Example:** `localhost:3000/expenses/1`\n\n### Response\n\n**Success (200 OK):**\n\n``` json\n{\n  \"id\": \"number\",\n  \"user_id\": \"string\",\n  \"amount\": 0,\n  \"date\": \"YYYY-MM-DD\",\n  \"category\": \"string\",\n  \"description\": \"string\",\n  \"createdAt\": \"timestamp\",\n  \"updatedAt\": \"timestamp\"\n}\n\n ```\n\n**Error (404 Not Found):**\n\n``` json\n{\n  \"error\": \"Failed to get expense\"\n}\n\n ```\n\n**Error (403 Forbidden):**\n\n``` json\n{\n  \"error\": \"Authentication Required!\"\n}\n\n ```\n\n### Usage Notes\n\n- Returns 404 if the expense doesn't exist\n    \n\n---"
+					},
+					"response": []
+				},
+				{
+					"name": "Update Expense",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"description\": \"Second  Expense\",\r\n    \"amount\": 30,\r\n    \"date\": \"2025-11-20\",\r\n    \"category\": \"Others\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:3000/api/expenses/11",
+							"host": [
+								"localhost"
+							],
+							"port": "3000",
+							"path": [
+								"api",
+								"expenses",
+								"11"
+							]
+						},
+						"description": "## Update Expense\n\n**Modify an existing expense record**\n\n- **Method:** `PUT`\n    \n- **URL:** `localhost:3000/expenses/:id`\n    \n- **Authentication:** Bearer Token (required)\n    \n- **Content-Type:** `application/json`\n    \n\n### Path Parameters\n\n- `id` (number, required) - Unique identifier of the expense to update\n    \n\n### Request Body\n\n``` json\n{\n  \"amount\": 0,\n  \"date\": \"YYYY-MM-DD\",\n  \"category\": \"string\",\n  \"description\": \"string\"\n}\n\n ```\n\n**Parameters:**\n\n- `amount` (number, optional) - Updated expense amount\n    \n- `date` (string, optional) - Updated date in YYYY-MM-DD format\n    \n- `category` (string, optional) - Updated category\n    \n- `description` (string, optional) - Updated description\n    \n\n### Response\n\n**Success (200 OK):**\n\n``` json\n{\n  \"id\": \"number\",\n  \"user_id\": \"string\",\n  \"amount\": 0,\n  \"date\": \"YYYY-MM-DD\",\n  \"category\": \"string\",\n  \"description\": \"string\",\n  \"createdAt\": \"timestamp\",\n  \"updatedAt\": \"timestamp\"\n}\n\n ```\n\n**Error (404 Not Found):**\n\n``` json\n{\n  \"error\": \"Failed to update expense\"\n}\n\n ```\n\n**Error (403 Forbidden):**\n\n``` json\n{\n  \"error\": \"Authentication Required!\"\n}\n\n ```\n\n### Usage Notes\n\n- Only include fields you want to update\n    \n- Date format must be YYYY-MM-DD if provided\n    \n- Amount must be positive if provided\n    \n\n---"
+					},
+					"response": []
+				}
+			],
+			"description": "# Expense Management Endpoints\n\nThis folder contains all endpoints for managing expense records. All endpoints in this folder require Bearer Token authentication.\n\n**Authentication Required:** All requests require `Authorization: Bearer {{accessToken}}` header\n\n---\n\n## General Information\n\n### Authentication\n\nAll requests in this folder require a valid access token in the Authorization header:\n\n```\nAuthorization: Bearer {{accessToken}}\n\n ```\n\nThe collection is configured to automatically include the `accessToken` variable.\n\n### Date Format\n\nAll date fields use the `YYYY-MM-DD` format (e.g., `2025-12-20`).\n\n### Error Handling\n\nCommon HTTP status codes:\n\n- `200 OK` - Request successful\n    \n- `201 Created` - Resource created successfully\n    \n- `400 Bad Request` - Invalid request data\n    \n- `401 Unauthorized` - Missing or invalid authentication token\n    \n- `403 Forbidden` - Access denied to the resource\n    \n- `404 Not Found` - Resource not found\n    \n- `500 Internal Server Error` - Server error"
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{accessToken}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}

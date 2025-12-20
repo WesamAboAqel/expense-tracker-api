@@ -56,7 +56,7 @@ export const authentication = async (
 
         next();
     } catch (error) {
-        response.status(404).json({ msg: "Invalid token" });
+        response.status(404).json({ msg: "Authentication Required!" });
         return;
     }
 };

@@ -24,7 +24,6 @@ export const createUser = async (data: newUser) => {
             created_at: new Date(),
             updated_at: new Date(),
         })
-        .returningAll()
         .executeTakeFirstOrThrow();
 };
 

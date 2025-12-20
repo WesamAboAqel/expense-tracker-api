@@ -25,6 +25,7 @@ export interface ExpensesTable {
     description: string;
     amount: number;
     date: Date;
+    category: string;
     created_at: Date;
     updated_at: Date;
 }

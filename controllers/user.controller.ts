@@ -32,9 +32,9 @@ export const signup = async (
 
         const newUser = { username, name, password: hashedPassword };
 
-        const user = await createUser(newUser);
+        await createUser(newUser);
 
-        response.status(201).json(user);
+        response.status(201).json({ msg: "User Created Successfully!" });
         return;
     } catch (error) {
         response.status(500).send(error);
