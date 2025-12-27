@@ -13,7 +13,6 @@ services:
     database:
         image: postgres:18
         container_name: expense-db
-        restart: always
         environment:
             POSTGRES_USER: expense_admin
             POSTGRES_PASSWORD: "12345678"
