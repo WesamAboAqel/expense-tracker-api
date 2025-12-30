@@ -21,6 +21,7 @@ This project focuses on backend fundamentals such as authentication, data access
 
 -   JWT access tokens with rotating refresh tokens and session revocation
 -   User signup/login and protected routes via bearer authentication
+-   Google OAuth login via Passport with automatic user provisioning
 -   Expense CRUD with filtering by category, date range, and amount range per user
 -   Kysely-powered PostgreSQL queries with typed schema and migration workflow
 -   Request logging with colored output and ~~centralized error handling~~ (planned)
@@ -52,6 +53,8 @@ Create a `.env` file in the project root. Use strong secrets in real deployments
 | ------------------ | --------------------------------- | --------------------------------------------------------------- |
 | `DATABASE_URL`     | Postgres connection string        | `postgresql://expense_admin:12345678@localhost:5432/expense_db` |
 | `JWT_TOKEN_SECRET` | Secret used to sign access tokens | `super-long-random-string`                                      |
+| `GOOGLE_CLIENT_ID` | Google OAuth client ID            | `123abc.apps.googleusercontent.com`                             |
+| `GOOGLE_CLIENT_SECRET` | Google OAuth client secret    | `your-client-secret`                                            |
 
 > When using Docker Compose, the default credentials in `docker-compose.yml` match the example connection string above. Adjust as needed.
 
@@ -113,6 +116,7 @@ Base URL: `http://localhost:3000/api`
 **Auth**
 
 -   `POST /auth/login` — body: `{ "username": string, "password": string }` → returns `accessToken` + `refreshToken`.
+-   `GET /auth/google` — redirect to Google OAuth consent; callback issues `accessToken` + `refreshToken` and creates user if new.
 -   `POST /auth/refresh` — body: `{ "refreshToken": string }` → returns rotated tokens.
 
 **Users**
@@ -159,6 +163,13 @@ GET /api/expenses?category=Food&startDate=2024-01-01&endDate=2024-01-31&minAmoun
 1. User logs in and receives an access token and refresh token.
 2. Access token is sent as a Bearer token on protected routes.
 3. Refresh token is used to rotate tokens when the access token expires.
+
+### Google OAuth Setup
+
+1. Create a Google OAuth **Web application** credential.
+2. Add an authorized redirect URI: `http://localhost:3000/api/auth/google/callback`.
+3. Set `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` in `.env`.
+4. Start the server and hit `GET /api/auth/google`; on successful consent the callback returns JWT access/refresh tokens. Existing Google users are matched by `google_id`; first-time users are created automatically.
 
 ### Postman Collection
 
