@@ -1,4 +1,4 @@
-import { ControlledTransactionBuilder, Kysely, Transaction } from "kysely";
+import { Kysely, Transaction } from "kysely";
 import db from "../services/db.js";
 import { Database } from "../database/schema.js";
 

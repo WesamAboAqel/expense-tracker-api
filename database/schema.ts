@@ -6,6 +6,7 @@ export interface UserTable {
     name: string;
     username: string;
     password: string;
+    google_id: string | null;
     created_at: Date;
     updated_at: Date;
 }

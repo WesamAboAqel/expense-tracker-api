@@ -5,6 +5,7 @@ type newUser = {
     name: string;
     username: string;
     password: string;
+    google_id: string | null;
 };
 
 // @returns    users array - UserTable[]
@@ -24,6 +25,7 @@ export const createUser = async (data: newUser) => {
             created_at: new Date(),
             updated_at: new Date(),
         })
+        .returningAll()
         .executeTakeFirstOrThrow();
 };
 
@@ -46,5 +48,16 @@ export const getUserByUsername = async (username: string) => {
         .selectFrom("user")
         .selectAll()
         .where("username", "=", username)
+        .executeTakeFirst();
+};
+
+// @param      google_id
+// @returns    user - UserTable
+// @notes      finds user by google_id
+export const findUserbyGoogleId = async (google_id: string) => {
+    return await db
+        .selectFrom("user")
+        .selectAll()
+        .where("google_id", "=", google_id)
         .executeTakeFirst();
 };

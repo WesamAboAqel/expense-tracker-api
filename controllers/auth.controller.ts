@@ -1,9 +1,15 @@
 import { NextFunction, Request, Response } from "express";
 import crypto from "node:crypto";
 import { refreshTransaction } from "../repositories/session.repo.js";
-import { getUserByUsername } from "../repositories/user.repo.js";
+import {
+    createUser,
+    findUserbyGoogleId,
+    getUserByUsername,
+} from "../repositories/user.repo.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
+import passport from "passport";
+import { create } from "node:domain";
 
 // @desc    update refresh and access tokens
 // @route   POST /api/auth/refresh
@@ -96,4 +102,46 @@ export const login = async (
         console.log(error);
         return;
     }
+};
+
+// @desc    Google Passport
+// @route   GET /api/example
+// @access  Public
+export const googleAuth = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+): Promise<void> => {
+    // console.log("googleAuth");
+    const passportGoogleUser = request.user as {
+        google_id: string;
+        username: string;
+        name: string;
+    };
+
+    const searchUser = await findUserbyGoogleId(passportGoogleUser.google_id);
+
+    if (searchUser) {
+        response.locals.user = searchUser;
+        next();
+        return;
+    }
+
+    const hashedPassword = await bcrypt.hash(
+        crypto.randomBytes(16).toString("hex"),
+        10
+    );
+
+    const newUser = {
+        name: passportGoogleUser.name,
+        username: passportGoogleUser.username,
+        password: hashedPassword,
+        google_id: passportGoogleUser.google_id,
+    };
+
+    const user = await createUser(newUser);
+    response.locals.user = user;
+
+    next();
+    return;
 };

@@ -1,7 +1,7 @@
 import { Migrator, FileMigrationProvider } from "kysely";
 import fs from "fs/promises";
 import path from "path";
-import db from "../services/db.js";
+import db from "../services/db.ts";
 
 const migrator = new Migrator({
     db,

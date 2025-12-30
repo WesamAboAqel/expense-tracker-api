@@ -24,13 +24,19 @@ export const signup = async (
 ): Promise<void> => {
     try {
         const { username, name, password } = request.body;
+
         const hashedPassword = await bcrypt.hash(password, 10);
 
         if (!username || !name || !hashedPassword) {
             throw new Error("Wrong Inputs");
         }
 
-        const newUser = { username, name, password: hashedPassword };
+        const newUser = {
+            username,
+            name,
+            password: hashedPassword,
+            google_id: null,
+        };
 
         await createUser(newUser);
 
