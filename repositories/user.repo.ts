@@ -1,9 +1,9 @@
 import db from "../services/db.js";
-import { UserTable } from "../database/schema.js";
 
 type newUser = {
     name: string;
     username: string;
+    email: string;
     password: string;
     google_id: string | null;
 };

@@ -5,6 +5,7 @@ export interface UserTable {
     id: Generated<number>;
     name: string;
     username: string;
+    email: string;
     password: string;
     google_id: string | null;
     created_at: Date;
@@ -31,8 +32,18 @@ export interface ExpensesTable {
     updated_at: Date;
 }
 
+export interface OTPTable {
+    id: Generated<number>;
+    user_id: number;
+    code_hash: string;
+    expires_at: Date;
+    used_at: Date | null;
+    created_at: Date;
+}
+
 export interface Database {
     user: UserTable;
     sessions: SessionTable;
     expenses: ExpensesTable;
+    otp: OTPTable;
 }

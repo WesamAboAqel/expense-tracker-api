@@ -4,15 +4,16 @@ const [, , name] = process.argv;
 
 if (!name) {
     console.log("Usage: npm run create-migration <name>");
+    process.exit(1);
 }
 
 fs.mkdirSync("database/migrations", { recursive: true });
 
 const date = new Date();
 
-const fileName = `${String(date.getDate()).padStart(2, "0")}${String(
+const fileName = `${String(date.getFullYear()).padStart(2, "0")}${String(
     date.getMonth() + 1
-).padStart(2, "0")}${String(date.getFullYear()).padStart(2, "0")}_${String(
+).padStart(2, "0")}${String(date.getDate()).padStart(2, "0")}_${String(
     date.getHours()
 ).padStart(2, "0")}${String(date.getMinutes()).padStart(2, "0")}${String(
     date.getSeconds()

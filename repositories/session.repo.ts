@@ -1,8 +1,6 @@
 import { Kysely, Transaction } from "kysely";
 import db from "../services/db.js";
 import { Database } from "../database/schema.js";
-import { error } from "node:console";
-import { response } from "express";
 
 type newSession = {
     user_id: number;

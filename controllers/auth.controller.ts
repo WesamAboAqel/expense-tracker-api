@@ -4,12 +4,15 @@ import { refreshTransaction } from "../repositories/session.repo.js";
 import {
     createUser,
     findUserbyGoogleId,
+    getUserById,
     getUserByUsername,
 } from "../repositories/user.repo.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import passport from "passport";
 import { create } from "node:domain";
+import { transporter } from "../services/google.nodemailer.js";
+import { checkOTP, createOTP } from "../repositories/otp.repo.js";
 
 // @desc    update refresh and access tokens
 // @route   POST /api/auth/refresh
@@ -79,6 +82,7 @@ export const login = async (
 ): Promise<void> => {
     try {
         const { username, password } = request.body;
+        // console.log(username);
 
         const user = await getUserByUsername(username);
 
@@ -95,8 +99,6 @@ export const login = async (
         }
 
         next();
-
-        return;
     } catch (error) {
         response.status(400).json({ error });
         console.log(error);
@@ -115,6 +117,7 @@ export const googleAuth = async (
     // console.log("googleAuth");
     const passportGoogleUser = request.user as {
         google_id: string;
+        email: string;
         username: string;
         name: string;
     };
@@ -135,6 +138,7 @@ export const googleAuth = async (
     const newUser = {
         name: passportGoogleUser.name,
         username: passportGoogleUser.username,
+        email: passportGoogleUser.email,
         password: hashedPassword,
         google_id: passportGoogleUser.google_id,
     };
@@ -144,4 +148,55 @@ export const googleAuth = async (
 
     next();
     return;
+};
+
+// @desc    send otp email after logging in
+// @route   POST /api/auth/login
+// @access  Private
+export const sendOTP = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+): Promise<void> => {
+    const user = response.locals.user;
+    const code = String(Math.floor(Math.random() * 1000000)).padEnd(6, "0");
+
+    const info = await transporter.sendMail({
+        from: `${user.name} wesamabuaqel138@gmail.com`,
+        to: `${user.email}`,
+        subject: "OTP Verification",
+        text: `Dear ${user.name}, you recently requested a one time password to be forwarded to your email, here is it: ${code}, make sure to not share it with anyone please.`, // Plain-text version of the message
+        html: `<p>Dear ${user.name},<br> you recently requested a one time password to be forwarded to your email, here is it: <b>${code}</b>, make sure to not share it with anyone please.</p>`, // HTML version of the message
+    });
+
+    const code_hash = crypto.createHash("sha256").update(code).digest("hex");
+
+    const params = {
+        code_hash,
+        user_id: user.id,
+    };
+
+    console.log(code_hash);
+
+    await createOTP(params);
+
+    response.status(201).json({ msg: "otp sent" });
+    return;
+};
+
+// @desc    redeem the otp sent to the email
+// @route   POST /api/auth/login
+// @access  Private
+export const redeemOTP = async (
+    request: Request,
+    response: Response,
+    next: NextFunction
+): Promise<void> => {
+    const { otp } = request.body;
+    const code_hash = crypto.createHash("sha256").update(otp).digest("hex");
+
+    const record = await checkOTP(code_hash);
+
+    response.locals.user = await getUserById(record.user_id);
+    next();
 };

@@ -4,6 +4,8 @@ import {
     sendTokens,
     login,
     googleAuth,
+    sendOTP,
+    redeemOTP,
 } from "../controllers/auth.controller.js";
 import { generateTokens } from "../middleware/jwt.js";
 import passport from "passport";
@@ -11,7 +13,9 @@ import "../services/google.oauth.js";
 
 const router = express.Router();
 
-router.post("/login", login, generateTokens, sendTokens);
+router.post("/login", login, sendOTP);
+router.post("/otp", redeemOTP, generateTokens, sendTokens);
+
 router.get(
     "/google",
     passport.authenticate("google", { scope: ["email", "profile"] })

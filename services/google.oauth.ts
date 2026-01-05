@@ -1,12 +1,6 @@
 import passport from "passport";
 import { Strategy as GoogleStrategy } from "passport-google-oauth20";
 
-type googleUser = {
-    google_id: string;
-    name: string;
-    username: string;
-};
-
 passport.use(
     new GoogleStrategy(
         {
@@ -25,6 +19,7 @@ passport.use(
                 google_id: profile.id,
                 name: `${profile.name.givenName} ${profile.name.familyName}`,
                 username: profile.emails[0].value.split("@")[0],
+                email: profile.emails[0].value,
             });
         }
     )
