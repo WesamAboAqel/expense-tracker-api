@@ -12,7 +12,7 @@ export const generateTokens = async (
     response: Response,
     next: NextFunction
 ): Promise<void> => {
-    const user_id = response.locals.user.id;
+    const user_id = response.locals.payload.user_id;
 
     response.locals.refreshToken = crypto.randomBytes(64).toString("hex");
     // console.log(response.locals.refreshToken);

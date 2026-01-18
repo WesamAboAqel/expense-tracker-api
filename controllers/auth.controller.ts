@@ -9,8 +9,6 @@ import {
 } from "../repositories/user.repo.js";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
-import passport from "passport";
-import { create } from "node:domain";
 import { transporter } from "../services/google.nodemailer.js";
 import { checkOTP, createOTP } from "../repositories/otp.repo.js";
 
@@ -159,7 +157,7 @@ export const sendOTP = async (
     next: NextFunction
 ): Promise<void> => {
     const user = response.locals.user;
-    const code = String(Math.floor(Math.random() * 1000000)).padEnd(6, "0");
+    const code = crypto.randomInt(100000, 999999).toString();
 
     const info = await transporter.sendMail({
         from: `${user.name} wesamabuaqel138@gmail.com`,
@@ -176,11 +174,15 @@ export const sendOTP = async (
         user_id: user.id,
     };
 
-    console.log(code_hash);
+    const challengeToken = jwt.sign(
+        { user_id: user.id },
+        process.env.JWT_CHALLENGE_SECRET!,
+        { expiresIn: "5m" }
+    );
 
     await createOTP(params);
 
-    response.status(201).json({ msg: "otp sent" });
+    response.status(201).json({ challengeToken });
     return;
 };
 
@@ -192,11 +194,22 @@ export const redeemOTP = async (
     response: Response,
     next: NextFunction
 ): Promise<void> => {
-    const { otp } = request.body;
+    const { otp, challengeToken } = request.body;
     const code_hash = crypto.createHash("sha256").update(otp).digest("hex");
 
-    const record = await checkOTP(code_hash);
+    response.locals.payload = jwt.verify(
+        challengeToken,
+        process.env.JWT_CHALLENGE_SECRET!
+    );
 
-    response.locals.user = await getUserById(record.user_id);
+    
+    if (typeof response.locals.payload === "string") {
+        throw new Error("Invalid Token payload");
+    }
+
+    const params = { code_hash, user_id: response.locals.payload.user_id };
+
+    await checkOTP(params);
+
     next();
 };

@@ -15,7 +15,7 @@ export const exec = (trx?: Executor) => trx ?? db;
 //     created_at: Date;
 // }
 
-type newOTP = {
+type OTP = {
     code_hash: string;
     user_id: number;
 };
@@ -23,7 +23,7 @@ type newOTP = {
 // @param      params - newOTP
 // @returns    OTP Entry - OTPTable
 // @notes      creates an otp
-export const createOTP = async (params: newOTP) => {
+export const createOTP = async (params: OTP) => {
     return await db
         .insertInto("otp")
         .values({
@@ -35,10 +35,10 @@ export const createOTP = async (params: newOTP) => {
         .execute();
 };
 
-// @param      code_hash - string
+// @param      params - OTP
 // @returns    void
 // @notes      checks for the otp of a logged in user
-export const checkOTP = async (code_hash: string) => {
+export const checkOTP = async (params: OTP) => {
     return await db
         .updateTable("otp")
         .set({
@@ -46,7 +46,8 @@ export const checkOTP = async (code_hash: string) => {
         })
         .where("used_at", "is", null)
         .where("expires_at", ">", new Date())
-        .where("code_hash", "=", code_hash)
+        .where("code_hash", "=", params.code_hash)
+        .where("user_id", "=", params.user_id)
         .returningAll()
         .executeTakeFirstOrThrow();
 };
